@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>添加权限</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../css/oksub.css">
+</head>
+<body>
+    <div class="ok-body">
+        <!--form表单-->
+        <form class="layui-form layui-form-pane ok-form">
+            <div class="layui-form-item">
+                <label class="layui-form-label">角色</label>
+                <div class="layui-input-block">
+                    <select name="roleId" id="role">
+                        <option value="0">请选择</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">权限</label>
+                <div class="layui-input-block">
+                    <input type="checkbox" name="pname" value="1" title="员工管理">
+                    <input type="checkbox" name="pname" value="2" title="角色管理">
+                    <input type="checkbox" name="pname" value="3" title="客户管理">
+                    <input type="checkbox" name="pname" value="4" title="供应商管理">
+                    <input type="checkbox" name="pname" value="5" title="商品管理">
+                    <input type="checkbox" name="pname" value="6" title="仓库管理">
+                    <input type="checkbox" name="pname" value="7" title="商品进货">
+                    <input type="checkbox" name="pname" value="8" title="商品退货">
+                    <input type="checkbox" name="pname" value="9" title="审批商品进货">
+                    <input type="checkbox" name="pname" value="10" title="审批商品退货">
+                    <input type="checkbox" name="pname" value="11" title="商品进货进库">
+                    <input type="checkbox" name="pname" value="12" title="商品退货出库">
+                    <input type="checkbox" name="pname" value="13" title="销售商品">
+                    <input type="checkbox" name="pname" value="14" title="销售商品退货">
+                    <input type="checkbox" name="pname" value="15" title="销售表单审批">
+                    <input type="checkbox" name="pname" value="16" title="销售表单执行">
+                    <input type="checkbox" name="pname" value="17" title="部门管理">
+                    <input type="checkbox" name="pname" value="18" title="权限管理">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="add">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <!--js逻辑-->
+    <script src="../../lib/layui/layui.js"></script>
+    <script src="../../js/jquery-1.10.2.js"></script>
+    <script>
+        layui.use(["element", "form", "laydate", "okLayer", "okUtils"], function () {
+            let form = layui.form;
+            let laydate = layui.laydate;
+            let okLayer = layui.okLayer;
+            let okUtils = layui.okUtils;
+            form.on("submit(add)", function (data) {
+                var arr = new Array();
+                $("input:checkbox[name='pname']:checked").each(function(i){
+                    arr[i] = $(this).val();
+                });
+                data.field.pname = arr.join(",");
+                okUtils.ajax("/addPermission", "post", data.field, true).done(function (response) {
+                    console.log(response);
+                    okLayer.greenTickMsg("添加成功", function () {
+                        parent.layer.close(parent.layer.getFrameIndex(window.name));
+                    });
+                }).fail(function (error) {
+                    console.log(error)
+                });
+                return false;
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(function () {
+            $.ajax({
+                url : "/Role",
+                type : "post",
+                dataType : "json",
+                success : function (result) {
+                    var data = result.data;
+                    var scu = $("#role");
+                    var option = "";
+                    if(data!=null && data!=""){
+                        $.each(data,function (i,item) {
+                            option += "<option value=\""+item.id+"\">" + item.name + "</option>"
+                        });
+                        scu.append(option);
+                    }
+                },
+                error : function () {
+                    alert("!!!");
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.warehouse.dao.SalesPlayInterface">
+    <resultMap id="SalesMap" type="Sales">
+        <id column="id" property="id"></id>
+        <result column="customerId" property="customerId"></result>
+        <result column="payType" property="payType"></result>
+        <result column="salesTime" property="salesTime"></result>
+        <result column="operateName" property="operateName"></result>
+        <result column="number" property="number"></result>
+        <result column="salePrice" property="salePrice"></result>
+        <result column="goodsId" property="goodsId"></result>
+        <result column="remark" property="remark"></result>
+        <result column="warehouseName" property="warehouseName"></result>
+        <result column="approveTime" property="approveTime"></result>
+        <result column="state" property="state"></result>
+        <association property="goods" resultMap="goodsMap"></association>
+        <association property="customar" resultMap="customarMap"></association>
+        <association property="approve" resultMap="approveMap"></association>
+    </resultMap>
+    <resultMap id="SalesBackMap" type="Salesback">
+        <id column="id" property="id"></id>
+        <result column="customerId" property="customerId"></result>
+        <result column="payType" property="payType"></result>
+        <result column="salesbackTime" property="salesbackTime"></result>
+        <result column="operateName" property="operateName"></result>
+        <result column="number" property="number"></result>
+        <result column="goodsId" property="goodsId"></result>
+        <result column="reason" property="reason"></result>
+        <result column="warehouseName" property="warehouseName"></result>
+        <result column="approveTime" property="approveTime"></result>
+        <result column="state" property="state"></result>
+        <association property="goods" resultMap="goodsMap"></association>
+        <association property="customar" resultMap="customarMap"></association>
+        <association property="approve" resultMap="approveMap"></association>
+    </resultMap>
+    <resultMap id="goodsMap" type="Goods">
+        <id column="id" property="id"></id>
+        <result column="goodsName" property="goodsName"></result>
+        <result column="size" property="size"></result>
+    </resultMap>
+    <resultMap id="customarMap" type="Customar">
+        <id column="id" property="id"></id>
+        <result column="customerName" property="customerName"></result>
+    </resultMap>
+    <resultMap id="approveMap" type="Approve">
+        <id column="id" property="id"></id>
+        <result column="approveName" property="approveName"></result>
+        <result column="approveSuccessTime" property="approveSuccessTime"></result>
+    </resultMap>
+
+    <select id="getSalesList" resultMap="SalesMap">
+        select sales.id,customar.customerName,goods.goodsName,goods.size,sales.number,sales.salePrice,sales.operateName,sales.salesTime,sales.payType,sales.remark
+        ,approve.approveName,approve.approveSuccessTime,sales.state,sales.warehouseName
+        from sales,goods,customar,approve where sales.customerId=customar.id and sales.goodsId=goods.id and sales.id = approve.salesId and sales.state &gt;= 1
+        <if test="id!=null and id!=''">
+            and sales.id=#{id}
+        </if>
+        <if test="startTime!=null and startTime!=''">
+            and salesTime &gt; #{startTime}
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and salesTime &lt; #{endTime}
+        </if>
+        order by sales.state
+        limit #{page},#{limit}
+    </select>
+    <select id="getSalesListCount" resultType="int">
+        select count(1) from sales,goods,customar,approve where sales.customerId=customar.id and sales.goodsId=goods.id and sales.id = approve.salesId and sales.state &gt;= 1
+        <if test="id!=null and id!=''">
+            and sales.id=#{id}
+        </if>
+        <if test="startTime!=null and startTime!=''">
+            and salesTime &gt; #{startTime}
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and salesTime &lt; #{endTime}
+        </if>
+    </select>
+
+
+
+
+    <select id="getSaleBackList" resultMap="SalesBackMap">
+        select salesback.id,customar.customerName,goods.goodsName,goods.size,salesback.number,salesback.operateName,salesback.salesbackTime,salesback.payType,salesback.reason
+        ,approve.approveName,approve.approveSuccessTime,salesback.state,salesback.warehouseName
+        from salesback,goods,customar,approve where salesback.customerId=customar.id and salesback.goodsId=goods.id and salesback.id=approve.salsebackId and salesback.state &gt;= 1
+        <if test="id!=null and id!=''">
+            and salesback.id=#{id}
+        </if>
+        <if test="startTime!=null and startTime!=''">
+            and salesbackTime &gt; #{startTime}
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and salesbackTime &lt; #{endTime}
+        </if>
+        order by salesback.state
+        limit #{page},#{limit}
+    </select>
+    <select id="getSaleBackListCount" resultType="int">
+        select count(1) from salesback,goods,customar,approve where salesback.customerId=customar.id and salesback.goodsId=goods.id and salesback.id=approve.salsebackId and salesback.state &gt;= 1
+        <if test="id!=null and id!=''">
+            and salesback.id=#{id}
+        </if>
+        <if test="startTime!=null and startTime!=''">
+            and salesbackTime &gt; #{startTime}
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and salesbackTime &lt; #{endTime}
+        </if>
+    </select>
+
+
+
+    <update id="updateSalesMan">
+        update sales set warehouseName=#{warehouseName},state=2,salesTime=NOW() where id=#{id}
+    </update>
+    <select id="getSaleCount" resultType="int">
+        select number from sales where id=#{id}
+    </select>
+    <select id="getSalesGoodsId" resultType="Sales">
+        select goodsId from sales where id=#{id}
+    </select>
+    <update id="updateGoodsCount">
+        update goods set number=number-#{count} where id=#{id}
+    </update>
+
+
+    <update id="updateSalesBackMan">
+        update salesback set warehouseName=#{warehouseName},state=2,salesbackTime=NOW() where id=#{id}
+    </update>
+    <select id="getSaleBackCount" resultType="int">
+        select number from salesback where id=#{id}
+    </select>
+    <select id="getSalesBackGoodsId" resultType="Salesback">
+        select goodsId from salesback where id=#{id}
+    </select>
+    <update id="updateBackGoodsCount">
+        update goods set number=number+#{count} where id=#{id}
+    </update>
+
+</mapper>

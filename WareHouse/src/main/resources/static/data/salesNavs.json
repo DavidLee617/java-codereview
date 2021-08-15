@@ -1,0 +1,31 @@
+[
+    {
+        "title": "后台首页",
+        "href": "pages/console.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;",
+        "spread": true,
+        "isCheck": true
+    },
+    {
+        "title": "销售管理",
+        "href": "",
+        "icon": "&#xe66f;",
+        "spread": false,
+        "children": [
+            {
+                "title": "销售商品",
+                "href": "pages/member/sales.html",
+                "fontFamily": "layui-icon",
+                "icon": "&#xe62e;",
+                "spread": false
+            },
+            {
+                "title": "销售商品退货",
+                "href": "pages/member/salesback.html",
+                "icon": "&#xe62e;",
+                "spread": false
+            }
+        ]
+    }
+]

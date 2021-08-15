@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>更新商品信息</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../css/oksub.css">
+</head>
+<body>
+    <div class="ok-body">
+        <!--form表单-->
+        <form class="layui-form layui-form-pane ok-form" lay-filter="filter">
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">商品名称</label>
+                <div class="layui-input-block">
+                    <input type="hidden" name="id" id="id">
+                    <input type="text" name="goodsName" id="goodsName" placeholder="请输入商品名称" autocomplete="off" class="layui-input" lay-verify="required">
+                </div>
+            </div>
+            <div class="layui-form-item userAddress">
+                <label class="layui-form-label">产地</label>
+                <div class="layui-input-block">
+                    <input type="text" name="producePlace" id="producePlace" placeholder="请输入具体地址" autocomplete="off" class="layui-input" lay-verify="required">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">商品类别</label>
+                <div class="layui-input-block">
+                    <input type="text" name="goodsType" id="goodsType" placeholder="请输入商品类别" autocomplete="off" class="layui-input"
+                           lay-verify="required">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">规格</label>
+                <div class="layui-input-block">
+                    <input type="text" name="size" id="size" placeholder="请输入商品规格" autocomplete="off" class="layui-input"
+                           lay-verify="required">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">包装类型</label>
+                <div class="layui-input-block">
+                    <select id="type" name="type">
+                        <option id="op1" selected></option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">生产批号</label>
+                <div class="layui-input-block">
+                    <input type="text" name="productCode" id="productCode" placeholder="请输入商品生产批号" autocomplete="off" class="layui-input"
+                           lay-verify="required">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">批准文号</label>
+                <div class="layui-input-block">
+                    <input type="text" name="promitCode" id="promitCode" placeholder="请输入商品批准文号" autocomplete="off" class="layui-input"
+                           lay-verify="required">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">商品描述</label>
+                <div class="layui-input-block">
+                    <input type="text" name="description" id="description" placeholder="请输入商品描述" autocomplete="off" class="layui-input"
+                           lay-verify="required">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">进货价格</label>
+                <div class="layui-input-block">
+                    <input type="text" name="inportprice" id="inportprice" placeholder="请输入进货价格" autocomplete="off" class="layui-input"
+                           lay-verify="number">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">销售价格</label>
+                <div class="layui-input-block">
+                    <input type="text" name="salesprice" id="salesprice" placeholder="请输入销售价格" autocomplete="off" class="layui-input"
+                           lay-verify="number">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">供应商名称</label>
+                <div class="layui-input-block">
+                    <select id="providername" name="providername">
+                        <option id="op2" selected></option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">商品状态</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="state" title="上架" value="1">
+                    <input type="radio" name="state" title="下架" value="0">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">库存数量</label>
+                <div class="layui-input-block">
+                    <input type="text" name="number" id="number" placeholder="请输入库存数量" autocomplete="off" class="layui-input"
+                           lay-verify="number">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">商品图片</label>
+                <div class="layui-upload">
+                    <button type="button" class="layui-btn" id="pic">上传图片</button>
+                    <div class="layui-upload-list">
+                        <img class="layui-upload-img" id="demo1" style="height: 130px; width: 200px; border-color:#fff;margin-left: 110px">
+                        <p id="nowPic"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">仓库名称</label>
+                <div class="layui-input-block">
+                    <select id="warese" name="wareName">
+                        <option id="op3" selected></option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">库位名称</label>
+                <div class="layui-input-block">
+                    <select id="locationse" name="locationName">
+                        <option id="op4" selected></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="edit">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <!--js逻辑-->
+    <script src="../../lib/layui/layui.js"></script>
+    <script src="../../js/jquery-1.10.2.js"></script>
+    <script>
+        function initForm(data) {
+            $("#id").val(data.id);
+            $("#goodsName").val(data.goodsName);
+            $("#producePlace").val(data.producePlace);
+            $("#goodsType").val(data.goodsType);
+            $("#size").val(data.size);
+            $("#productCode").val(data.productCode);
+            $("#promitCode").val(data.promitCode);
+            $("#description").val(data.description);
+            $("#inportprice").val(data.inportprice);
+            $("#salesprice").val(data.salesprice);
+            $("#number").val(data.number);
+            $("#demo1").attr('src',"/pages/member/"+data.goodsImg);
+            layui.use(["form"],function () {
+                let form = layui.form;
+                // $("#op1").val(data.type);
+                $("#op1").html(data.type);
+                // $("#op2").val(data.providername);
+                $("#op2").html(data.providername);
+                // $("#op3").val(data.wareName);
+                $("#op3").html(data.wareName);
+                // $("#op4").val(data.locationName);
+                $("#op4").html(data.locationName);
+                if(data.state==0){
+                    $("input[name='state'][value='0'][title='下架']").attr('checked',true);
+                }
+                if(data.state==1){
+                    $("input[name='state'][value='1'][title='上架']").attr('checked',true);
+                }
+                form.render();
+            })
+        }
+
+        layui.use(["element", "form", "laydate", "okLayer", "okUtils"], function () {
+            let form = layui.form;
+            let laydate = layui.laydate;
+            let okLayer = layui.okLayer;
+            let okUtils = layui.okUtils;
+
+            // form.val("filter", initData);
+
+            laydate.render({elem: "#birthday", type: "datetime"});
+
+            form.verify({
+                birthdayVerify: [/^((((1[6-9]|[2-9]\d)\d{2})-(0?[13578]|1[02])-(0?[1-9]|[12]\d|3[01]))|(((1[6-9]|[2-9]\d)\d{2})-(0?[13456789]|1[012])-(0?[1-9]|[12]\d|30))|(((1[6-9]|[2-9]\d)\d{2})-0?2-(0?[1-9]|1\d|2[0-8]))|(((1[6-9]|[2-9]\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00))-0?2-29-))(\s(([01]\d{1})|(2[0123])):([0-5]\d):([0-5]\d))?$/, '日期格式不正确']
+            });
+
+            form.on("submit(edit)", function (data) {
+                okUtils.ajax("/updateGoods", "post", data.field, true).done(function (response) {
+                    console.log(response);
+                    okLayer.greenTickMsg("编辑成功", function () {
+                        parent.layer.close(parent.layer.getFrameIndex(window.name));
+                    });
+                }).fail(function (error) {
+                    console.log(error)
+                });
+                return false;
+            });
+        })
+    </script>
+    <script>
+        $(document).ready(function(){
+            $.ajax({
+                url :"/selectWareLocation",
+                type : "post",
+                data : {},
+                dataType : "json",
+                success : function (data) {
+                    var warelo = "";
+                    var warelo2 = $("#warese");
+                    var locationwa = "";
+                    var locationwa2 = $("#locationse");
+                    $.each(data.ware,function(index,value){
+                        warelo += "<option value=\""+value.wareName+"\">" + value.wareName +"</option>"
+                    });
+                    warelo2.append(warelo);
+
+                    $.each(data.location,function (index,value) {
+                        locationwa += "<option value=\""+value.locationName+"\">" + value.locationName +"</option>"
+                    });
+                    locationwa2.append(locationwa);
+                }
+
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function(){
+            $.ajax({
+                url :"/selectPackage",
+                type : "post",
+                data : {},
+                dataType : "json",
+                success : function (data) {
+                    var type1 = "";
+                    var type2 = $("#type");
+                    $.each(data.package,function (index,value) {
+                        type1 += "<option>" + value.type + "</option>"
+                    });
+                    type2.append(type1);
+                }
+
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function(){
+            $.ajax({
+                url :"/selectProvider",
+                type : "post",
+                data : {},
+                dataType : "json",
+                success : function (data) {
+                    var providername1 = "";
+                    var providername2 = $("#providername");
+                    $.each(data.provider,function (index,value) {
+                        providername1 += "<option>" + value.providername + "</option>"
+                    });
+                    providername2.append(providername1);
+                }
+
+            });
+        });
+    </script>
+    <script>
+        layui.use('upload', function(){
+            var $ = layui.jquery
+                ,upload = layui.upload;
+
+            //普通图片上传
+            var uploadInst = upload.render({
+                elem: '#pic'
+                ,url: '/updateGoodImg/'
+                ,accept:'images'
+                ,size:50000
+                ,before: function(obj){
+
+                    obj.preview(function(index, file, result){
+
+                        $('#demo1').attr('src', result);
+                    });
+                }
+                ,done: function(res){
+                    //如果上传失败
+                    if(res.code > 0){
+                        return layer.msg('上传失败');
+                    }
+                    //上传成功
+                    var demoText = $('#nowPic');
+                    demoText.html('<span style="color: #4cae4c; margin-left: 110px">上传成功</span>');
+
+                    var fileupload = $(".image");
+                    fileupload.attr("value",res.data.src);
+                    console.log(fileupload.attr("value"));
+                }
+                ,error: function(){
+                    //演示失败状态，并实现重传
+                    var nowPic = $('#nowPic');
+                    nowPic.html('<span style="color: #FF5722; margin-left: 110px">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+                    nowPic.find('.demo-reload').on('click', function(){
+                        uploadInst.upload();
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

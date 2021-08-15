@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.warehouse.dao.CustomarDao">
+<!-- 查询全部客户表 -->
+    <select id="getCustomarList" resultType="Customar">
+        select * from customar limit #{page},#{limit}
+    </select>
+    <!--查询客户申请未处理-->
+    <select id="getcustomarState" resultType="int">
+        select count(1) from customar
+        where state = 0;
+    </select>
+<!--查询客户数量数据-->
+    <select id="getCustomarcount" resultType="int">
+        select count(1) from customar
+    </select>
+<!--修改-->
+    <update id="updateCustomar">
+        update customar set customerName=#{customerName},zip=#{zip},tel=#{tel},address=#{address},contactName=#{contactName},contactTel=#{contactTel},bank=#{bank},account=#{account},email=#{email},state=#{state} where id=#{id}
+    </update>
+<!--添加-->
+    <update id="addCustomar">
+        INSERT into customar value (null, #{customerName},#{zip},#{tel},#{address},#{contactName},#{contactTel},#{bank},#{account},#{email},1)
+    </update>
+<!-- 删除-->
+    <delete id="deleteCustomar">
+        delete from customar where id=#{id}
+    </delete>
+<!--模糊查询-->
+    <select id="selectById" resultType="Customar">
+        select customar.id,customerName,zip,tel,address,contactName,contactTel,
+        bank,account,email,state from customar where customar.customerName=#{customerName}
+    </select>
+</mapper>

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.warehouse.dao.InportDao">
+
+    <resultMap id="inportList" type="inport">
+        <result property="id" column="id"/>
+        <result property="payType" column="payType"/>
+        <result property="approveTime" column="time"/>
+        <result property="operateName" column="operateName"/>
+        <result property="number" column="number"/>
+        <result property="remark" column="remark"/>
+        <result property="reason" column="reason"/>
+        <result property="state" column="state"/>
+        <result property="warehouseName" column="warehouseName"/>
+        <association property="goods" javaType="Goods" />
+        <association property="provider" javaType="Provider" />
+        <association property="approve" javaType="Approve" />
+    </resultMap>
+
+    <!--查询进货申请未处理-->
+    <select id="getInportState" resultType="int">
+        select count(1) from inport
+        where state = 0;
+    </select>
+    <select id="getInportList" resultMap="inportList">
+        select i.id,p.providername,g.goodsName,g.size,i.payType,i.` approveTime` as time ,i.operateName
+        ,i.number,i.inportPrice,i.remark,i.reason,i.state from inport i,provider p,goods g
+        where i.goodsId = g.id and i.providerId = p.id
+            <if test="startTime != null and startTime != ''">
+                and i.` approveTime` &gt; #{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and i.` approveTime` &lt; #{endTime}
+            </if>
+            <if test="ID != null">
+                and i.id = #{ID}
+            </if>
+    </select>
+
+    <select id="getApprovedInportList" resultMap="inportList">
+        select i.id,p.providername,g.goodsName,g.size,i.payType,i.inportTime,i.warehouseName,i.operateName
+             ,i.number,i.inportPrice,i.remark,i.state,a.* from inport i,provider p,goods g,approve a
+        where i.goodsId = g.id and i.providerId = p.id and a.inportId = i.id and i.state in (1,2)
+        <if test="startTime != null and startTime != ''">
+            and a.approveSuccessTime &gt; #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and a.approveSuccessTime &lt; #{endTime}
+        </if>
+        <if test="ID != null">
+            and i.id = #{ID}
+        </if>
+    </select>
+
+    <select id="getProviderIdByName" resultType="integer">
+        select id from provider where providername = #{name}
+    </select>
+
+    <select id="getGoodsIdByName" resultType="integer">
+        select id from goods where goodsName = #{name}
+    </select>
+
+
+    <update id="inport">
+        INSERT into inport (providerId,goodsId,payType,number,inportPrice,remark,reason,goodsSize,state,` approveTime`,operateName)
+        VALUES ((SELECT id FROM provider WHERE providername = #{providerName}),
+                (SELECT id FROM goods g WHERE goodsName = #{goodsName} and g.size = #{goodsSize}),
+                #{payType},#{goodsCount},#{inportPrice},#{remark},#{reason},#{goodsSize},0,#{approveTime},#{operateName}
+                )
+    </update>
+
+    <update id="updateInport">
+        update inport set providerId = (SELECT id FROM provider WHERE providername = #{providerName}),
+                          goodsId = (SELECT id FROM goods g WHERE goodsName = #{goodsName} and g.size = #{goodsSize}),
+                          payType = #{payType},number = #{goodsCount},inportPrice = #{inportPrice},remark = #{remark},
+                          goodsSize = #{goodsSize} where id = #{id}
+    </update>
+
+    <select id="getProviderNames" resultType="string">
+        select providername from provider where providername like CONCAT('%',#{key},'%')
+    </select>
+
+    <select id="getGoodsName" resultType="string">
+        select distinct goodsName from goods where goodsName like CONCAT('%',#{key},'%')
+    </select>
+
+    <select id="getGoodsSize" resultType="string">
+        select size from goods where goodsName = #{goodsName}
+    </select>
+
+    <select id="getInportById" resultMap="inportList">
+        select p.providername,g.goodsName,g.size,i.payType,i.inportTime,i.operateName
+             ,i.number,i.inportPrice,i.remark,i.state from inport i,provider p,goods g where i.goodsId
+            = g.id and i.providerId = p.id and i.id = #{id};
+    </select>
+
+    <update id="approveAdd">
+        update inport set state = 1 where id = #{id}
+    </update>
+
+    <update id="updataApprove">
+        insert into approve (approveName,inportId,approveSuccessTime)
+        values (#{approveName},#{inportId},#{approveSuccessTime})
+    </update>
+
+    <select id="getGoodsIdFromInport" resultType="int">
+        select goodsId from inport where id = #{id}
+    </select>
+
+    <select id="getNumFromInport" resultType="int">
+        select number
+        from inport
+        where id = #{id}
+    </select>
+
+    <select id="getNumFromGoods" resultType="int">
+        select number from goods where id = #{goodsId}
+    </select>
+
+    <update id="inportIntoWarehouse">
+        update goods set number = #{num} where id = #{id}
+    </update>
+
+    <update id="updateWarehouseName">
+        update inport set warehouseName = #{warehouseName},state = 2,inportTime = #{inportTime}
+        where id = #{id}
+    </update>
+
+    <select id="getStatebyId" resultType="int">
+        select state from inport where id = #{id}
+    </select>
+</mapper>

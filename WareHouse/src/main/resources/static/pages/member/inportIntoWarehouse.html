@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.springframework.org/schema/jdbc">
+<head>
+    <meta charset="utf-8">
+    <title>进货商品列表</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../css/oksub.css">
+</head>
+<body>
+<div class="ok-body">
+    <!--模糊搜索区域-->
+    <div class="layui-row">
+        <form class="layui-form layui-col-md12 ok-search">
+            <input class="layui-input" placeholder="开始日期(审批)" autocomplete="off" id="startTime" name="startTime">
+            <input class="layui-input" placeholder="截止日期(审批)" autocomplete="off" id="endTime" name="endTime">
+            <input class="layui-input" placeholder="ID" autocomplete="off" name="ID">
+            <button class="layui-btn" lay-submit="" lay-filter="search">
+                <i class="layui-icon">&#xe615;</i>
+            </button>
+        </form>
+    </div>
+    <!--数据表格-->
+    <table class="layui-hide" id="tableId" lay-filter="tableFilter"></table>
+</div>
+<!--js逻辑-->
+<script src="../../lib/layui/layui.js"></script>
+<script src="../../js/jquery-1.10.2.js"></script>
+<script th:inline="none">
+    layui.use(["element", "table", "form", "laydate", "okLayer", "okUtils"], function () {
+        let table = layui.table;
+        let form = layui.form;
+        let laydate = layui.laydate;
+        let okLayer = layui.okLayer;
+        let okUtils = layui.okUtils;
+
+        laydate.render({elem: "#startTime", type: "datetime"});
+        laydate.render({elem: "#endTime", type: "datetime"});
+
+        let userTable = table.render({
+            elem: '#tableId',
+            url: "/pages/inport/getApprovedInportList",
+            limit: 10,
+            page: true,
+            toolbar: true,
+            toolbar: "#toolbarTpl",
+            size: "sm",
+            cols: [[
+                {type: "checkbox", fixed: "left"},
+                {field: "id",title: "ID", width: 160, sort: true},
+                {field: "providername", title: "供应商", width: 100,templet:"<div>{{d.provider.providername}}</div>"},
+                {field: "goodsName",title: "商品名称", width: 100,templet:"<div>{{d.goods.goodsName}}</div>"},
+                {field: "size", title: "规格", width: 100,templet:"<div>{{d.goods.size}}</div>"},
+                {field: "payType", title: "支付类型", width: 100},
+                {field: "operateName", title: "申请人", width: 100},
+                {field: "approveName", title: "审批人", width: 100,templet:"<div>{{d.approve.approveName}}</div>"},
+                {field: "approveSuccessTime", title: "审批时间", width: 170,templet:"<div>{{d.approve.approveSuccessTime}}</div>"},
+                {field: "inportTime", title: "进库时间", width: 170},
+                {field: "warehouseName", title: "仓管", width: 100},
+                {field: "number", title: "进货数量", width: 100},
+                {field: "inportPrice", title: "进货价格", width: 120},
+                {field: "remark", title: "备注", width: 120},
+                {field: "state", title: "状态", width: 120, templet: "#approveState"},
+                {title: "操作", width: 100, align: "center", fixed: "right", templet: "#operationTpl"}
+            ]],
+            done: function (res, curr, count) {
+                console.info(res, curr, count);
+            }
+        });
+
+        form.on("submit(search)", function (data) {
+            userTable.reload({
+                where: data.field,
+                page: {curr: 1}
+            });
+            return false;
+        });
+
+        table.on("toolbar(tableFilter)", function (obj) {
+            switch (obj.event) {
+                case "batchEnabled":
+                    batchEnabled();
+                    break;
+                case "batchDisabled":
+                    batchDisabled();
+                    break;
+                case "batchDel":
+                    batchDel();
+                    break;
+                case "add":
+                    add();
+                    break;
+            }
+        });
+
+        table.on("tool(tableFilter)", function (obj) {
+            let data = obj.data;
+            switch (obj.event) {
+                case "edit":
+                    edit(data);
+                    break;
+                case "del":
+                    del(data);
+                    break;
+            }
+        });
+
+        function add() {
+            okLayer.open("添加进货商品", "/pages/inport/add", "90%", "90%", null, function () {
+                userTable.reload();
+            })
+        }
+
+        function edit(data) {
+            var id = data.id;
+            $.ajax({
+                url : "/pages/inport/inportIntoWarehouse",
+                type : "post",
+                data : {"id" : id},
+                dataType : "json",
+                success : function (msg) {
+                    if (msg === false){
+                        okLayer.redCrossMsg("入库失败！")
+                    }else {
+                        okLayer.greenTickMsg("入库成功！", function () {
+                            window.location.reload();
+                        });
+                    }
+                },
+                error : function () {
+                    alert("!!!")
+                }
+
+            });
+        }
+
+        function del(data) {
+            okLayer.open("退货申请", "/pages/inport/del", "90%", "90%", function (layero) {
+                let iframeWin = window[layero.find("iframe")[0]["name"]];
+                iframeWin.initForm(data);
+            }, function () {
+                userTable.reload();
+            })
+        }
+
+    })
+</script>
+
+<script type="text/html" id="approveState">
+    {{#  if(d.state == 1){ }}
+    <span class="layui-btn layui-btn-normal layui-btn-xs">审核通过</span>
+    {{#  } else if(d.state == 2) { }}
+    <span class="layui-btn layui-btn-checked layui-btn-xs">已入库</span>
+    {{#  } }}
+</script>
+
+<!-- 行工具栏模板 -->
+<script type="text/html" id="operationTpl">
+    <a href="javascript:" title="确认入库" lay-event="edit"><i class="layui-icon">&#x1005;</i></a>
+</script>
+</body>
+</html>

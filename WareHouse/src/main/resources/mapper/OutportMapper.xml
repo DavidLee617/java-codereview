@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.warehouse.dao.OutportDao">
+
+    <resultMap id="outportList" type="outport">
+        <result property="id" column="id"/>
+        <result property="payType" column="payType"/>
+        <result property="approveTime" column="approveTime"/>
+        <result property="operateName" column="operateName"/>
+        <result property="number" column="number"/>
+        <result property="outputPrice" column="outputPrice"/>
+        <result property="reason" column="reason"/>
+        <result property="remark" column="remark"/>
+        <result property="state" column="state"/>
+        <association property="goods" javaType="Goods" />
+        <association property="provider" javaType="Provider" />
+        <association property="approve" javaType="Approve" />
+    </resultMap>
+
+    <!--查询退货申请未处理-->
+    <select id="getOutportState" resultType="int">
+        select count(1) from outport
+        where state = 0;
+    </select>
+    <select id="getOutportList" resultMap="outportList">
+        select o.id,p.providername,g.goodsName,g.size,o.payType,o.approveTime,
+               o.operateName,o.number,o.outputPrice,o.reason,o.state
+               from outport o,goods g ,provider p
+        where p.id = o.providerId and g.id = o.goodsId
+        <if test="startTime != null and startTime != ''">
+            and o.approveTime &gt; #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and o.approveTime &lt; #{endTime}
+        </if>
+        <if test="ID != null">
+            and o.id = #{ID}
+        </if>
+    </select>
+
+    <select id="getApprovedOutportList" resultMap="outportList">
+        select o.id,p.providername,g.goodsName,g.size,o.payType,o.outputTime,
+               o.warehouseName,o.operateName,o.number,o.outputPrice,o.reason,o.state,a.*
+        from outport o,goods g ,provider p,approve a
+        where p.id = o.providerId and g.id = o.goodsId and a.outportId = o.id and o.state in(1,2)
+        <if test="startTime != null and startTime != ''">
+            and a.approveSuccessTime &gt; #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and a.approveSuccessTime &lt; #{endTime}
+        </if>
+        <if test="ID != null">
+            and o.id = #{ID}
+        </if>
+    </select>
+
+    <update id="outport">
+        INSERT into outport (providerId,goodsId,payType,number,outputPrice,reason,state,approveTime,operateName)
+        VALUES ((SELECT id FROM provider WHERE providername = #{providerName}),
+                (SELECT id FROM goods g WHERE goodsName = #{goodsName} and g.size = #{goodsSize}),
+                #{payType},#{number},#{outputPrice},#{reason},0,#{approveTime},#{operateName}
+               )
+    </update>
+
+    <update id="approveOut">
+        update outport set state = 1 where id = #{id}
+    </update>
+
+    <select id="getStatebyId" resultType="int">
+        select state from outport where id = #{id}
+    </select>
+
+    <update id="updataApprove">
+        insert into approve (approveName,outportId,approveSuccessTime)
+        values (#{approveName},#{outportId},#{approveSuccessTime})
+    </update>
+
+
+
+
+    <select id="getGoodsIdFromOutport" resultType="int">
+        select goodsId from outport where id = #{id}
+    </select>
+
+    <select id="getNumFromOutport" resultType="int">
+        select number
+        from outport
+        where id = #{id}
+    </select>
+
+    <select id="getNumFromGoods" resultType="int">
+        select number from goods where id = #{goodsId}
+    </select>
+
+    <update id="outportFromWarehouse">
+        update goods set number = #{num} where id = #{id}
+    </update>
+
+    <update id="updateWarehouseName">
+        update outport set warehouseName = #{warehouseName},state = 2,outputTime = #{outportTime}
+        where id = #{id}
+    </update>
+
+
+</mapper>

@@ -1,0 +1,28 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - ThreadPoolExecutorDemo",
+            "request": "launch",
+            "mainClass": "JavaGuide.code.java.ThreadPoolExecutorDemo.src.threadPoolExecutor.ThreadPoolExecutorDemo",
+            "projectName": "java-codereview_832a6438"
+        },
+        {
+            "name": "g++-9 - 生成和调试活动文件",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${fileDirname}/${fileBasenameNoExtension}",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb",
+            "preLaunchTask": "C/C++: g++-9 build active file"
+        }
+    ]
+}

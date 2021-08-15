@@ -1,0 +1,178 @@
+[
+    {
+        "title": "后台首页",
+        "href": "pages/console.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;",
+        "spread": true,
+        "isCheck": true
+    },
+    {
+        "title": "基础管理",
+        "href": "",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe6b8;",
+        "children": [
+            {
+                "title": "客户管理",
+                "href": "pages/member/customar.html",
+                "icon": "&#xe68e;"
+            },
+            {
+                "title": "供应商管理",
+                "href": "pages/member/provider.html",
+                "icon": "&#xe68e;"
+            },
+            {
+                "title": "商品管理",
+                "href": "pages/member/goods.html",
+                "icon": "&#xe68e;"
+            }, {
+                "title": "仓库管理",
+                "href": "pages/member/ware.html",
+                "icon": "&#xe68e;"
+            }
+        ]
+    },
+    {
+        "title": "进货管理",
+        "href": "",
+        "icon": "&#xe66f;",
+        "spread": false,
+        "children": [
+            {
+                "title": "商品进货",
+                "href": "/pages/member/inport.html",
+                "fontFamily": "layui-icon",
+                "icon": "&#xe62e;",
+                "spread": false
+            },
+            {
+                "title": "商品退货",
+                "href": "/pages/member/outport.html",
+                "icon": "&#xe62e;",
+                "spread": false
+            },
+            {
+                "title": "审批商品进货",
+                "href": "/pages/member/inport-approve-add.html",
+                "fontFamily": "layui-icon",
+                "icon": "&#xe62e;",
+                "spread": false
+            },
+            {
+                "title": "审批商品退货",
+                "href": "/pages/member/outport-approve-out.html",
+                "icon": "&#xe62e;",
+                "spread": false
+            },
+            {
+                "title": "商品进货进库",
+                "href": "/pages/member/inportIntoWarehouse.html",
+                "fontFamily": "layui-icon",
+                "icon": "&#xe62e;",
+                "spread": false
+            },
+            {
+                "title": "商品退货出库",
+                "href": "/pages/member/outportOutWarehouse.html",
+                "icon": "&#xe62e;",
+                "spread": false
+            }
+        ]
+    },
+    {
+        "title": "销售管理",
+        "href": "",
+        "icon": "&#xe66f;",
+        "spread": false,
+        "children": [
+            {
+                "title": "销售商品",
+                "href": "pages/member/sales.html",
+                "fontFamily": "layui-icon",
+                "icon": "&#xe62e;",
+                "spread": false
+            },
+            {
+                "title": "销售商品退货",
+                "href": "pages/member/salesback.html",
+                "icon": "&#xe62e;",
+                "spread": false
+            },
+            {
+                "title": "销售表单审批",
+                "href": "pages/member/salesfrom.html",
+                "icon": "&#xe62e;",
+                "spread": false
+            },
+            {
+                "title": "销售表单执行",
+                "href": "pages/member/salesplay.html",
+                "icon": "&#xe62e;",
+                "spread": false
+            }
+        ]
+    },
+    {
+        "title": "系统管理",
+        "href": "",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe68a;",
+        "spread": false,
+        "children": [
+            {
+                "title": "部门管理",
+                "href": "pages/member/department.html",
+                "icon": "&#xe62e;",
+                "spread": false
+            },
+            {
+                "title": "角色管理",
+                "href": "pages/member/role.html",
+                "icon": "&#xe61c;",
+                "spread": false
+            },
+            {
+                "title": "员工管理",
+                "href": "pages/member/user.html",
+                "icon": "&#xe61c;",
+                "spread": false
+            }
+        ]
+    },
+    {
+        "title": "其他功能",
+        "href": "",
+        "icon": "&#xe636;",
+        "spread": false,
+        "children": [
+            {
+                "title": "系统公告",
+                "href": "pages/txtedit/Neditor.html",
+                "icon": "&#xe62e;",
+                "spread": false
+            },
+            {
+                "title": "登录日志",
+                "href": "pages/system/log.html",
+                "icon": "&#xe62e;",
+                "spread": false
+            }
+        ]
+    },
+    {
+        "title": "统计分析",
+        "href": "",
+        "icon": "&#xe636;",
+        "spread": false,
+        "children": [
+            {
+                "title": "数据分析",
+                "href": "pages/chart/chart1.html",
+                "icon": "&#xe62e;",
+                "spread": false
+            }
+        ]
+    }
+]

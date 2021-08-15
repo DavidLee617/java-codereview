@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>添加库位</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../css/oksub.css">
+</head>
+<body>
+<div class="ok-body">
+    <!--form表单-->
+    <form class="layui-form layui-form-pane ok-form" lay-filter="filter" >
+        <div class="layui-form-item">
+            <label class="layui-form-label">仓库名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="wareName" placeholder="请输入仓库名称" autocomplete="off" class="layui-input" lay-verify="required">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">库位数量</label>
+            <div class="layui-input-block">
+                <input type="text" name="count" placeholder="请输入库位数量" autocomplete="off" class="layui-input"
+                       lay-verify="number">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="add">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+<!--js逻辑-->
+<script src="../../lib/layui/layui.js"></script>
+<script type="text/javascript" src="user-info.js"></script>
+<script>
+    layui.use(["element", "form", "laydate", "okLayer", "okUtils"], function () {
+        let form = layui.form;
+        let laydate = layui.laydate;
+        let okLayer = layui.okLayer;
+        let okUtils = layui.okUtils;
+
+        laydate.render({elem: "#birthday", type: "datetime"});
+
+        form.on("submit(add)", function (data) {
+            okUtils.ajax("/addWare", "get", data.field, true).done(function (response) {
+                console.log(response);
+                okLayer.greenTickMsg("添加成功", function () {
+                    parent.layer.close(parent.layer.getFrameIndex(window.name));
+                });
+            }).fail(function (error) {
+                console.log(error)
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

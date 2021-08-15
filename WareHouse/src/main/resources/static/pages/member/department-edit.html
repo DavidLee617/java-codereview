@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>更新用户</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../css/oksub.css">
+</head>
+<body>
+    <div class="ok-body">
+        <!--form表单-->
+        <form class="layui-form ok-form" lay-filter="filter">
+            <input type="hidden" name="id" autocomplete="off" class="layui-input">
+            <div class="layui-form-item">
+                <label class="layui-form-label">部门名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="name" autocomplete="off" class="layui-input" lay-verify="required">
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">备注</label>
+                <div class="layui-input-block">
+                    <textarea name="remark" placeholder="请输入内容" class="layui-textarea"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="edit">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <!--js逻辑-->
+    <script src="../../lib/layui/layui.js"></script>
+    <script type="text/javascript" src="user-info.js"></script>
+    <script>
+        let initData;
+
+        function initForm(data) {
+            let jsonString = JSON.stringify(data);
+            initData = JSON.parse(jsonString);
+        }
+
+        layui.use(["element", "form", "laydate", "okLayer", "okUtils"], function () {
+            let form = layui.form;
+            let laydate = layui.laydate;
+            let okLayer = layui.okLayer;
+            let okUtils = layui.okUtils;
+
+            form.val("filter", initData);
+
+            laydate.render({elem: "#entryTime", type: "date"});
+
+            form.on("submit(edit)", function (data) {
+                okUtils.ajax("/updateDepartment", "put", data.field, true).done(function (response) {
+                    console.log(response);
+                    okLayer.greenTickMsg("编辑成功", function () {
+                        parent.layer.close(parent.layer.getFrameIndex(window.name));
+                    });
+                }).fail(function (error) {
+                    console.log(error)
+                });
+                return false;
+            });
+        })
+    </script>
+</body>
+</html>

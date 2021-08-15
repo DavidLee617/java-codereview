@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.warehouse.dao.PermissionDao">
+    <select id="getPermissionList" resultType="Permission">
+        select * from permission limit #{page},#{limit}
+    </select>
+    <select id="getPermissionCount" resultType="int">
+        select count(1) from permission
+    </select>
+    <!--查询权限申请未处理-->
+    <select id="getPermissionState" resultType="int">
+        select count(1) from permission
+        where state = 0;
+    </select>
+    <select id="getPermissionListByRid" resultType="Permission">
+        select p.* from `role-permission` rp
+        LEFT JOIN permission p on rp.pid = p.id where rp.rid = #{rid}
+    </select>
+</mapper>

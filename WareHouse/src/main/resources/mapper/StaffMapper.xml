@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.warehouse.dao.StaffDao">
+    <resultMap id="staffMap" type="Staff">
+        <id property="id" column="id"></id>
+        <result property="name" column="sname"></result>
+        <result property="jobNumber" column="jobNumber"></result>
+        <result property="password" column="password"></result>
+        <result property="idCard" column="idCard"></result>
+        <result property="tel" column="tel"></result>
+        <result property="sex" column="sex"></result>
+        <result property="age" column="age"></result>
+        <result property="address" column="address"></result>
+        <result property="entryTime" column="entryTime"></result>
+        <result property="state" column="sstate"></result>
+        <result property="dapatmentId" column="dapatmentId"></result>
+        <result property="roleId" column="roleId"></result>
+        <result property="remark" column="sremark"></result>
+        <result property="pic" column="pic"></result>
+        <association property="role" resultMap="roleMap"></association>
+        <association property="department" resultMap="departmentMap"></association>
+        <collection property="permission" resultMap="permissionMap"></collection>
+    </resultMap>
+    <resultMap id="roleMap" type="Role">
+        <id column="id" property="id"></id>
+        <result property="name" column="rname"></result>
+        <result property="state" column="state"></result>
+        <result property="remark" column="remark"></result>
+        <collection property="permission" resultMap="permissionMap"></collection>
+    </resultMap>
+    <resultMap id="permissionMap" type="Permission">
+        <id column="id" property="id"></id>
+        <result property="name" column="pname"></result>
+        <result property="p_name" column="p_name"></result>
+        <result property="state" column="state"></result>
+        <result property="remark" column="remark"></result>
+    </resultMap>
+    <resultMap id="departmentMap" type="Department">
+        <id column="id" property="id"></id>
+        <result property="name" column="dname"></result>
+        <result property="remark" column="remark"></result>
+    </resultMap>
+    <select id="getStaffListByName" resultMap="staffMap">
+        select s.id,s.`name` sname,jobNumber,`password`,idCard,tel,sex,age,address,entryTime,s.state sstate,pic,s.remark sremark,d.`name` dname,r.`name` rname
+        from staff s,department d,role r
+        where s.dapatmentId=d.id
+        and s.roleId=r.id
+        and jobNumber=#{jobNumber}
+    </select>
+    <select id="getRoleByName" resultMap="roleMap">
+        select r.`name` rname,p_name from role r,permission p,`role-permission` rp
+        where r.id=rp.rid
+        and p.id=rp.pid
+        and r.`name`=#{name}
+    </select>
+    <select id="getStaffList" resultMap="staffMap">
+        select distinct s.id,s.`name` sname,jobNumber,`password`,idCard,tel,sex,age,address,entryTime,s.state sstate,pic,s.remark sremark,d.`name` dname,r.`name` rname
+        from staff s,department d,role r
+        where s.dapatmentId=d.id
+        and s.roleId=r.id
+        <if test="jobNumber != null and jobNumber != ''">
+            and (jobNumber=#{jobNumber} or s.name=#{jobNumber})
+        </if>
+        <if test="startTime != null and startTime != ''">
+            and entryTime &gt;= #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and entryTime &lt;= #{endTime}
+        </if>
+        limit #{page},#{limit}
+    </select>
+    <select id="getStaff" resultMap="staffMap">
+        select distinct s.id,s.`name` sname,jobNumber,`password`,idCard,tel,sex,age,address,entryTime,s.state sstate,roleId,pic,s.remark sremark,d.`name` dname,r.`name` rname
+        from staff s,department d,role r
+        where s.dapatmentId=d.id
+        and s.roleId=r.id
+        and s.state = 1
+        and jobNumber=#{jobNumber}
+    </select>
+    <select id="getStaffByTel" resultMap="staffMap">
+        select distinct s.id,s.`name` sname,jobNumber,`password`,idCard,tel,sex,age,address,entryTime,s.state sstate,roleId,pic,s.remark sremark,d.`name` dname,r.`name` rname
+        from staff s,department d,role r
+        where s.dapatmentId=d.id
+        and s.roleId=r.id
+        and s.state = 1
+        and tel=#{tel}
+    </select>
+    <select id="getStaffById" resultMap="staffMap">
+        select distinct s.id,s.`name` sname,jobNumber,`password`,idCard,tel,sex,age,address,entryTime,s.state sstate,pic,s.remark sremark,d.`name` dname,r.`name` rname
+        from staff s,department d,role r
+        where s.dapatmentId=d.id
+        and s.roleId=r.id
+        and s.id=#{id}
+    </select>
+    <select id="getStaffCount" resultType="int">
+        select count(1) from staff
+        <where>
+            <if test="jobNumber != null and jobNumber != ''">
+                and jobNumber=#{jobNumber}
+            </if>
+            <if test="startTime != null and startTime != ''">
+                and entryTime &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and entryTime &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+    <insert id="addStaff">
+        insert into staff values (null,#{name},#{jobNumber},#{password},#{idCard},#{tel},#{sex},#{age},#{address},#{entryTime},#{dapatmentId},#{state},#{remark},'avatar.png',#{roleId})
+    </insert>
+    <update id="updateStaff">
+        update staff
+         <set>
+             <if test="name != null and name != ''">
+                 name=#{name},
+             </if>
+             <if test="jobNumber != null and jobNumber != ''">
+                 jobNumber=#{jobNumber},
+             </if>
+             <if test="idCard != null and idCard != ''">
+                 idCard=#{idCard},
+             </if>
+             <if test="tel != null and tel != ''">
+                 tel=#{tel},
+             </if>
+             <if test="sex != null and sex != ''">
+                 sex=#{sex},
+             </if>
+             <if test="age != null and age != ''">
+                 age=#{age},
+             </if>
+             <if test="address != null and address != ''">
+                 address=#{address},
+             </if>
+             <if test="remark != null and remark != ''">
+                 remark=#{remark},
+             </if>
+             <if test="entryTime != null and entryTime != ''">
+                 entryTime=#{entryTime},
+             </if>
+             <if test="pic != null and pic != ''">
+                 pic=#{pic},
+             </if>
+             <if test="dapatmentId != null and dapatmentId != ''">
+                 dapatmentId=#{dapatmentId},
+             </if>
+             <if test="roleId != null and roleId != ''">
+                 roleId=#{roleId},
+             </if>
+             <if test="state != null and state != ''">
+                 state=#{state},
+             </if>
+         </set>
+        where id=#{id}
+    </update>
+    <update id="updateStaffIndex">
+        update staff set tel=#{tel},sex=#{sex},age=#{age},address=#{address},state=#{state}
+        where id = #{id}
+    </update>
+    <delete id="deleteStaff">
+        delete from staff where id = #{id}
+    </delete>
+    <update id="updatePwd">
+        update staff set password=#{password} where id = #{id}
+    </update>
+</mapper>

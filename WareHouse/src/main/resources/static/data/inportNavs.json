@@ -1,0 +1,31 @@
+[
+    {
+        "title": "后台首页",
+        "href": "pages/console.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;",
+        "spread": true,
+        "isCheck": true
+    },
+    {
+        "title": "进货管理",
+        "href": "",
+        "icon": "&#xe66f;",
+        "spread": false,
+        "children": [
+            {
+                "title": "商品进货",
+                "href": "/pages/member/inport.html",
+                "fontFamily": "layui-icon",
+                "icon": "&#xe62e;",
+                "spread": false
+            },
+            {
+                "title": "商品退货",
+                "href": "/pages/member/outport.html",
+                "icon": "&#xe62e;",
+                "spread": false
+            }
+        ]
+    }
+]

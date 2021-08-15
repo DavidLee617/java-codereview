@@ -1,0 +1,11 @@
+{
+  "groups": [
+    {
+      "name": "router.urls",
+      "type": "com.company.Main",
+      "sourceType": "com.company.Main"
+    }
+  ],
+  "properties": [],
+  "hints": []
+}

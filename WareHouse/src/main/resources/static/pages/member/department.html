@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>部门列表</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../css/oksub.css">
+</head>
+<body>
+    <div class="ok-body">
+        <!--数据表格-->
+        <table class="layui-hide" id="tableId" lay-filter="tableFilter"></table>
+    </div>
+    <!--js逻辑-->
+    <script src="../../lib/layui/layui.js"></script>
+    <script>
+        layui.use(["element", "table", "form", "okLayer", "okUtils"], function () {
+            let table = layui.table;
+            let form = layui.form;
+            let okLayer = layui.okLayer;
+            let okUtils = layui.okUtils;
+
+            let userTable = table.render({
+                elem: '#tableId',
+                url: '/Dapartment',
+                limit: 10,
+                page: true,
+                toolbar: true,
+                toolbar: "#toolbarTpl",
+                size: "sm",
+                cols: [[
+                    {type: "checkbox", fixed: "left"},
+                    {field: "id", title: "ID", width: 100, sort: true},
+                    {field: "name", title: "部门名称", width: 100},
+                    {field: "remark", title: "备注", width: 150},
+                    {title: "操作", width: 100, align: "center", fixed: "right", templet: "#operationTpl"}
+                ]],
+                done: function (res, curr, count) {
+                    console.info(res, curr, count);
+                }
+            });
+
+            form.on("submit(search)", function (data) {
+                userTable.reload({
+                    where: data.field,
+                    page: {curr: 1}
+                });
+                return false;
+            });
+
+            table.on("toolbar(tableFilter)", function (obj) {
+                switch (obj.event) {
+                    case "batchDel":
+                        batchDel();
+                        break;
+                    case "add":
+                        add();
+                        break;
+                }
+            });
+
+            table.on("tool(tableFilter)", function (obj) {
+                let data = obj.data;
+                switch (obj.event) {
+                    case "edit":
+                        edit(data);
+                        break;
+                }
+            });
+
+            function batchDel() {
+                okLayer.confirm("确定要删除吗？", function (index) {
+                    layer.close(index);
+                    let idsStr = okUtils.tableBatchCheck(table);
+                    if (idsStr) {
+                        okUtils.ajax("/deleteDepartment", "delete", {idsStr: idsStr}, true).done(function (response) {
+                            console.log(response);
+                            okLayer.greenTickMsg("删除成功",function () {
+                                $(".layui-laypage-btn").click();
+                            });
+                        }).fail(function (error) {
+                            console.log(error)
+                        });
+                    }
+                });
+            }
+
+            function add() {
+                okLayer.open("添加部门信息", "department-add.html", "90%", "90%", null, function () {
+                    userTable.reload();
+                })
+            }
+
+            function edit(data) {
+                okLayer.open("更新部门信息", "department-edit.html", "90%", "90%", function (layero) {
+                    let iframeWin = window[layero.find("iframe")[0]["name"]];
+                    iframeWin.initForm(data);
+                }, function () {
+                    userTable.reload();
+                })
+            }
+        })
+    </script>
+    <!-- 头工具栏模板 -->
+    <script type="text/html" id="toolbarTpl">
+        <div class="layui-btn-container">
+            <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="batchDel">删除</button>
+            <button class="layui-btn layui-btn-sm" lay-event="add">添加部门</button>
+        </div>
+    </script>
+    <!-- 行工具栏模板 -->
+    <script type="text/html" id="operationTpl">
+        <a href="javascript:" title="编辑" lay-event="edit"><i class="layui-icon">&#xe642;</i></a>
+    </script>
+
+</body>
+</html>

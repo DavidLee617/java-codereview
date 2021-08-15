@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.warehouse.dao.GoodsDao">
+    <insert id="addGoodsImg">
+        insert into goods values (null,null,null,null,null,null,null,null,null,null,null,null,null,null,#{goodsImg},null,null)
+    </insert>
+    <select id="getGoodsId" resultType="Goods">
+        select id from goods where goodsImg=#{goodsImg}
+    </select>
+<!--查询全部商品-->
+    <select id="getGoodsList" resultType="Goods">
+        select goods.id,goodsName, goods.producePlace, goods.goodsType, goods.size, package.type, productCode, promitCode, description, inportprice, salesprice, provider.providername, goods.state, number,goodsImg,wareName,locationName  from goods,ware,location,package,provider where goods.wareId=ware.id and goods.locationId=location.id and goods.packageId=package.id and goods.providerId=provider.id limit #{page},#{limit}
+    </select>
+<!--查询商品数量数据-->
+    <select id="getGoodscount" resultType="int">
+        select count(1) from goods
+    </select>
+    <!--库存预警之查询商品库存数量-->
+    <select id="getGoodsNumber" resultType="Goods">
+        select * from goods
+        where number &lt; 40
+        limit #{page},#{limit}
+    </select>
+    <!--查询商品申请未处理-->
+    <select id="getGoodsState" resultType="int">
+        select count(1) from goods
+        where state = 0;
+    </select>
+<!--修改-->
+    <update id="updateGoods">
+       update goods set goodsName=#{goodsName},producePlace=#{producePlace},
+       goodsType=#{goodsType},size=#{size},packageId=(select id as packageId from package where type=#{type}),
+       productCode=#{productCode},promitCode=#{promitCode},description=#{description},
+       inportprice=#{inportprice},salesprice=#{salesprice},
+       providerId=(select id as providerId from provider where providername=#{providername}),
+       state=#{state},number=#{number},goodsImg=#{goodsImg},
+       wareId=(select id as wareId from ware where wareName=#{wareName}),
+       locationId=(select id as locationId from location where  wareId=(select id as wareId from ware where wareName=#{wareName}) and locationName=#{locationName})
+       where goods.id=#{id}
+    </update>
+<!--添加-->
+    <insert id="addGoods">
+        INSERT into goods values (null,#{goodsName},#{producePlace},#{goodsType},#{size},
+        (select id as packageId from package where type=#{type}),#{productCode},#{promitCode},#{description},#{inportprice},#{salesprice},
+        (select id as providerId from provider where providername=#{providername}),#{state},#{number},#{goodsImg},(select id as wareId from ware where wareName=#{wareName}),
+        (select id as locationId from location where locationName=#{locationName}))
+    </insert>
+
+    <!-- 模糊查询-->
+    <select id="selectById" resultType="Goods">
+        select goods.id,goodsName,producePlace,size,packageId,productCode,promitCode,description,inportprice,salesprice,providerId,state,number,goodsImg,wareId,locationId from goods where goods.goodsName=#{goodsName}
+    </select>
+<!--删除-->
+    <delete id="deleteGoods">
+        delete from goods where id=#{id}
+    </delete>
+<!--查询仓库-->
+    <select id="selectWare" resultType="Ware">
+        select * from ware
+    </select>
+<!--查询库位-->
+    <select id="selectLocation" resultType="Location">
+        select * from location
+    </select>
+<!--查询商品类型-->
+    <select id="selectPackage" resultType="Package">
+        select * from package
+    </select>
+<!--查询供应商名称-->
+    <select id="selectProvider" resultType="Provider">
+        select * from provider
+    </select>
+</mapper>

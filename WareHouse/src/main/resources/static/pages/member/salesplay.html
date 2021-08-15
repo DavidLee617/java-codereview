@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>执行申请列表</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../css/oksub.css">
+</head>
+<body>
+<div class="ok-body">
+    <!--模糊搜索区域-->
+    <div class="layui-row">
+        <form class="layui-form layui-col-md12 ok-search">
+            <input class="layui-input" placeholder="开始日期" autocomplete="off" id="startTime" name="startTime">
+            <input class="layui-input" placeholder="截止日期" autocomplete="off" id="endTime" name="endTime">
+            <input class="layui-input" placeholder="ID" autocomplete="off" name="id">
+            <button class="layui-btn" lay-submit="" lay-filter="search">
+                <i class="layui-icon">&#xe615;</i>
+            </button>
+        </form>
+    </div>
+    <!--数据表格-->
+    <table class="layui-hide" id="tableId1" lay-filter="tableFilter"></table>
+    <div class="layui-row">
+        <form class="layui-form layui-col-md12 ok-search">
+            <input class="layui-input" placeholder="开始日期" autocomplete="off" id="startTime1" name="startTime">
+            <input class="layui-input" placeholder="截止日期" autocomplete="off" id="endTime1" name="endTime">
+            <input class="layui-input" placeholder="ID" autocomplete="off" name="id">
+            <button class="layui-btn" lay-submit="" lay-filter="search1">
+                <i class="layui-icon">&#xe615;</i>
+            </button>
+        </form>
+    </div>
+    <table class="layui-hide" id="tableId" lay-filter="tableFilter"></table>
+</div>
+<!--js逻辑-->
+<script src="../../lib/layui/layui.js"></script>
+<script>
+    layui.use(["element", "table", "form", "laydate", "okLayer", "okUtils"], function () {
+        let table = layui.table;
+        let form = layui.form;
+        let laydate = layui.laydate;
+        let okLayer = layui.okLayer;
+        let okUtils = layui.okUtils;
+
+        laydate.render({elem: "#startTime", type: "date"});
+        laydate.render({elem: "#endTime", type: "date"});
+
+        laydate.render({elem: "#startTime1", type: "date"});
+        laydate.render({elem: "#endTime1", type: "date"});
+
+        form.on("submit(search)", function (data) {
+            userTable1.reload({
+                where: data.field,
+                page: {curr: 1}
+            });
+            return false;
+        });
+
+        form.on("submit(search1)", function (data) {
+            userTable.reload({
+                where: data.field,
+                page: {curr: 1}
+            });
+            return false;
+        });
+
+        let userTable1 = table.render({
+            elem: '#tableId1',
+            url: '/SalesPlayController/salesFromList',
+            limit: 10,
+            page: true,
+            toolbar: true,
+            toolbar: "#toolbarTpl1",
+            size: "sm",
+            cols: [[
+                {type: "checkbox", fixed: "left"},
+                {field: "id", title: "ID", width: 160, sort: true},
+                {field: "customerName", title: "客户名称", width: 100,templet: "<div>{{d.customar.customerName}}</div>"},
+                {field: "goodsName", title: "商品名称", width: 100,templet: "<div>{{d.goods.goodsName}}</div>"},
+                {field: "size", title: "商品规格", width: 100,templet: "<div>{{d.goods.size}}</div>"},
+                {field: "number", title: "销售数量", width: 100},
+                {field: "salePrice", title: "销售价格", width: 100},
+                {field: "operateName", title: "销售人", width: 100},
+                {field: "salesTime", title: "出库时间", width: 200},
+                {field: "warehouseName", title: "仓管人员", width: 200},
+                {field: "payType", title: "支付类型", width: 120},
+                {field: "state", title: "状态", width: 100, templet: "#approveState"},
+                {field: "remark", title: "备注", width: 120},
+                {field: "approveName", title: "审批人", width: 120,templet:"<div>{{d.approve.approveName}}</div>"},
+                {field: "approveSuccessTime", title: "审批成功时间", width: 200,templet:"<div>{{d.approve.approveSuccessTime}}</div>"},
+            ]],
+            done: function (res, curr, count) {
+                console.info(res, curr, count);
+            }
+        });
+
+        let userTable = table.render({
+            elem: '#tableId',
+            url: '/SalesPlayController/salesBackFromList',
+            limit: 10,
+            page: true,
+            toolbar: true,
+            toolbar: "#toolbarTpl",
+            size: "sm",
+            cols: [[
+                {type: "checkbox", fixed: "left"},
+                {field: "id", title: "ID", width: 160, sort: true},
+                {field: "customerName", title: "客户名称", width: 100,templet: "<div>{{d.customar.customerName}}</div>"},
+                {field: "goodsName", title: "商品名称", width: 100,templet: "<div>{{d.goods.goodsName}}</div>"},
+                {field: "size", title: "商品规格", width: 100,templet: "<div>{{d.goods.size}}</div>"},
+                {field: "number", title: "数量", width: 100},
+                {field: "operateName", title: "销售人", width: 100},
+                {field: "salesbackTime", title: "退货时间", width: 200},
+                {field: "warehouseName", title: "仓管人员", width: 200},
+                {field: "payType", title: "支付类型", width: 120},
+                {field: "state", title: "状态", width: 100, templet: "#approveState"},
+                {field: "reason", title: "退货原因", width: 120},
+                {field: "approveName", title: "审批人", width: 120,templet:"<div>{{d.approve.approveName}}</div>"},
+                {field: "approveSuccessTime", title: "审批成功时间", width: 200,templet:"<div>{{d.approve.approveSuccessTime}}</div>"},
+            ]],
+            done: function (res, curr, count) {
+                console.info(res, curr, count);
+            }
+        });
+
+        table.on("toolbar(tableFilter)", function (obj) {
+            switch (obj.event) {
+                case "batchDel":
+                    batchDel();
+                    break;
+                case "batchDel1":
+                    batchDel1();
+                    break;
+            }
+        });
+
+        function batchDel() {
+            okLayer.confirm("确定要执行退货申请吗？", function (index) {
+                layer.close(index);
+                let statesStr = okUtils.tableBatchCheck2(table);
+                for(var i=0; i<statesStr.length;i++){
+                    var states = statesStr[i];
+                    if(states==2){
+                        alert("已执行或所选包含已执行");
+                        return;
+                    }
+                }
+                let idsStr = okUtils.tableBatchCheck(table);
+                if (idsStr) {
+                    okUtils.ajax("/SalesPlayController/doSalesInput", "delete", {idsStr: idsStr}, true).done(function (response) {
+                        console.log(response);
+                        okLayer.greenTickMsg("退货申请成功",function () {
+                            window.parent.location.reload();
+                        });
+                    }).fail(function (error) {
+                        console.log(error)
+                    });
+                }
+            });
+        }
+
+        function batchDel1() {
+            okLayer.confirm("确定要执行销售申请吗？", function (index) {
+                layer.close(index);
+                let statesStr = okUtils.tableBatchCheck2(table);
+                for(var i=0; i<statesStr.length;i++){
+                    var states = statesStr[i];
+                    if(states==2){
+                        alert("已执行或所选包含已执行");
+                        return;
+                    }
+                }
+                let idsStr = okUtils.tableBatchCheck1(table);
+                if (idsStr) {
+                    okUtils.ajax("/SalesPlayController/doSalesOutput", "delete", {idsStr: idsStr}, true).done(function (response) {
+                        console.log(response);
+                        okLayer.greenTickMsg("销售申请成功",function () {
+                            window.parent.location.reload();
+                        });
+                    }).fail(function (error) {
+                        console.log(error)
+                    });
+                }
+            });
+        }
+
+    })
+</script>
+
+<script type="text/html" id="approveState">
+    {{#  if(d.state == 1){ }}
+    <span class="layui-btn layui-btn-normal layui-btn-xs">待处理</span>
+    {{# } else if(d.state == 2){ }}
+    <span class="layui-btn layui-btn-checked layui-btn-xs">已处理</span>
+    {{#  } }}
+</script>
+
+<script type="text/html" id="toolbarTpl">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="batchDel">执行退货申请</button>
+    </div>
+</script>
+<script type="text/html" id="toolbarTpl1">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="batchDel1">执行销售申请</button>
+    </div>
+</script>
+</body>
+</html>

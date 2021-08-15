@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.warehouse.dao.NoticeDao">
+    <!--查询公告表总数量-->
+    <select id="getNoticeCount" resultType="int">
+        select count(1) from notice
+    </select>
+    <!--查询公告表所有公告-->
+    <select id="selectNoticeList" resultType="Notice">
+        select * from notice
+            <if test="title!=null and title!=''">
+                where notice.title=#{title}
+            </if>
+            <if test="startTime!=null and startTime!=''">
+                where time &gt; #{startTime}
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                where time &lt; #{endTime}
+            </if>
+         limit #{page},#{limit}
+    </select>
+    <!--查询总数量-->
+    <select id="selectNoticeCount" resultType="int">
+        select count(1) from notice
+        <if test="title!=null and title!=''">
+            where notice.title like #{title}
+        </if>
+        <if test="startTime!=null and startTime!=''">
+            where time &gt; #{startTime}
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            where time &lt; #{endTime}
+        </if>
+    </select>
+    <!--添加-->
+    <insert id="addNotice">
+        insert into notice values (null,#{title},#{context},#{time},#{operateName})
+    </insert>
+    <!--删除-->
+    <delete id="deleteNotice">
+        delete from notice where id=#{id}
+    </delete>
+    <!--修改-->
+    <update id="updatenotice">
+        update notice set title=#{title},context=#{context},time=#{time},operateName=#{operateName} where id=#{id}
+    </update>
+    <!--根据Id查询-->
+    <select id="selectNoticeId" resultType="Notice">
+        select * from notice where id=#{id}
+    </select>
+</mapper>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.warehouse.dao.SalesDao">
+    <!--查询总条数-->
+    <select id="getSalesCount" resultType="int">
+        select count(1) from sales
+    </select>
+    <!--查询销售总额-->
+    <select id="getTotalSales" resultType="int">
+        select sum(salePrice*number) from sales
+    </select>
+
+    <resultMap id="salesMap" type="Sales">
+        <id property="id" column="id"></id>
+        <result property="customerId" column="customerId"></result>
+        <result property="payType" column="payType"></result>
+        <result property="salesTime" column="salesTime"></result>
+        <result property="operateName" column="operateName"></result>
+        <result property="number" column="number"></result>
+        <result property="salePrice" column="salePrice"></result>
+        <result property="goodsId" column="goodsId"></result>
+        <result property="remark" column="remark"></result>
+        <result property="warehouseName" column="warehouseName"></result>
+        <result property="approveTime" column="approveTime"></result>
+        <result property="state" column="state"></result>
+        <association property="goods" resultMap="goodsMap"></association>
+    </resultMap>
+    <resultMap id="goodsMap" type="Goods">
+        <id column="id" property="id"></id>
+        <result property="goodsName" column="goodsName"></result>
+        <result property="producePlace" column="producePlace"></result>
+        <result property="goodsType" column="goodsType"></result>
+        <result property="size" column="size"></result>
+        <result property="packageId" column="packageId"></result>
+        <result property="productCode" column="productCode"></result>
+        <result property="promitCode" column="promitCode"></result>
+        <result property="description" column="description"></result>
+        <result property="inportprice" column="inportprice"></result>
+        <result property="salesprice" column="salesprice"></result>
+        <result property="providerId" column="providerId"></result>
+        <result property="state" column="state"></result>
+        <result property="number" column="number"></result>
+        <result property="goodsImg" column="goodsImg"></result>
+        <result property="wareId" column="wareId"></result>
+        <result property="locationId" column="locationId"></result>
+    </resultMap>
+    <!--库存预警-->
+    <select id="getRankState" resultMap="salesMap">
+        select sales.id,goods.goodsName,sales.number from sales,goods
+        where sales.goodsId=goods.id
+    </select>
+    <!--销售火爆商品名排行,降序-->
+    <select id="selectRunklist" resultMap="salesMap">
+        SELECT goods.goodsName,SUM(sales.number)number from sales,goods
+        WHERE sales.goodsId=goods.id GROUP BY goodsName
+        ORDER BY number DESC LIMIT 5
+    </select>
+
+    <!--查询销售申请未处理-->
+    <select id="getSalesState" resultType="int">
+        select count(1) from sales
+        where state = 0;
+    </select>
+    <!--查询销售总量与退货表-->
+    <resultMap id="goodsMap1" type="Goods">
+        <id column="id" property="id"></id>
+        <result property="goodsName" column="goodsName"></result>
+        <result property="producePlace" column="producePlace"></result>
+        <result property="goodsType" column="goodsType"></result>
+        <result property="size" column="size"></result>
+        <result property="packageId" column="packageId"></result>
+        <result property="productCode" column="productCode"></result>
+        <result property="promitCode" column="promitCode"></result>
+        <result property="description" column="description"></result>
+        <result property="inportprice" column="inportprice"></result>
+        <result property="salesprice" column="salesprice"></result>
+        <result property="providerId" column="providerId"></result>
+        <result property="state" column="state"></result>
+        <result property="number" column="number"></result>
+        <result property="goodsImg" column="goodsImg"></result>
+        <result property="wareId" column="wareId"></result>
+        <result property="locationId" column="locationId"></result>
+        <association property="salesback" resultMap="SalesBackMap1"></association>
+    </resultMap>
+    <resultMap id="SalesBackMap1" type="Salesback">
+        <id column="id" property="id"></id>
+        <result column="customerId" property="customerId"></result>
+        <result column="payType" property="payType"></result>
+        <result column="salesbackTime" property="salesbackTime"></result>
+        <result column="operateName" property="operateName"></result>
+        <result column="number" property="number"></result>
+        <result column="goodsId" property="goodsId"></result>
+        <result column="reason" property="reason"></result>
+        <result column="warehouseName" property="warehouseName"></result>
+        <result column="approveTime" property="approveTime"></result>
+        <result column="state" property="state"></result>
+    </resultMap>
+    <select id="selectnumber" resultMap="goodsMap1">
+        SELECT goodsName,SUM(salesback.number)number from goods,salesback
+        where goods.id=salesback.goodsId GROUP BY goodsName
+        ORDER BY number desc LIMIT 10
+    </select>
+</mapper>

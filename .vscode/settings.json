@@ -1,0 +1,17 @@
+{
+    "sqltools.connections": [
+        {
+            "database": "spring",
+            "driver": "MySQL",
+            "mysqlOptions": {
+                "authProtocol": "default"
+            },
+            "name": "spring",
+            "password": "123456",
+            "port": 13306,
+            "previewLimit": 50,
+            "server": "202.115.16.131",
+            "username": "root"
+        }
+    ]
+}

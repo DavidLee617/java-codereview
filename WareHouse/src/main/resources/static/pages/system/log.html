@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>日志列表</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link rel="stylesheet" href="../../css/oksub.css">
+    </head>
+    <body>
+        <div class="ok-body">
+            <!--模糊搜索区域-->
+            <div class="layui-row">
+                <form class="layui-form layui-col-md12 ok-search">
+                    <input class="layui-input" placeholder="开始日期" autocomplete="off" id="startTime" name="startTime">
+                    <input class="layui-input" placeholder="截止日期" autocomplete="off" id="endTime" name="endTime">
+                    <input class="layui-input" placeholder="登录人" autocomplete="off" name="name">
+                    <button class="layui-btn" lay-submit="" lay-filter="search">
+                        <i class="layui-icon layui-icon-search"></i>
+                    </button>
+                </form>
+            </div>
+            <!--数据表格-->
+            <table class="layui-hide" id="tableId" lay-filter="tableFilter"></table>
+        </div>
+        <!--js逻辑-->
+        <script src="../../lib/layui/layui.js"></script>
+        <script>
+            layui.use(["element", "table", "form", "laydate", "okLayer", "okUtils"], function () {
+                var table = layui.table;
+                var form = layui.form;
+                var util = layui.util;
+                var laydate = layui.laydate;
+                var okLayer = layui.okLayer;
+                var okUtils = layui.okUtils;
+                util.fixbar({});
+
+                laydate.render({elem: "#startTime", type: "datetime"});
+                laydate.render({elem: "#endTime", type: "datetime"});
+
+                var articleTable = table.render({
+                    elem: "#tableId",
+                    url: '/getlogList',
+                    limit: 10,
+                    page: true,
+                    even: true,
+                    toolbar: "#toolbarTpl",
+                    size: "sm",
+                    cols: [[
+                        {type: "checkbox", fixed: "left"},
+                        {field: "name", title: "登录人", width: 100},
+                        {field: "ip", title: "IP地址", width: 180,},
+                        {field: "time", title: "登录时间", width: 250}
+                    ]],
+                    done: function (res, curr, count) {
+                        console.log(res, curr, count)
+                    }
+                });
+
+                form.on("submit(search)", function (data) {
+                    articleTable.reload({
+                        where: data.field,
+                        page: {curr: 1}
+                    });
+                    return false;
+                });
+
+                table.on("toolbar(tableFilter)", function (obj) {
+                    switch (obj.event) {
+                        case "batchDel":
+                            batchDel();
+                            break;
+                        case "add":
+                            add();
+                            break;
+                    }
+                });
+                table.on("toolbar(tableFilter)", function (obj) {
+                    switch (obj.event) {
+                        case "batchDel":
+                            batchDel();
+                            break;
+                        case "add":
+                            add();
+                            break;
+                    }
+                });
+
+                table.on("tool(tableFilter)", function (obj) {
+                    var data = obj.data;
+                    switch (obj.event) {
+                        case "edit":
+                            edit(data.id);
+                            break;
+                        case "del":
+                            del(data.id);
+                            break;
+                    }
+                });
+
+                function batchDel() {
+                    okLayer.confirm("确定要批量删除吗？", function (index) {
+                        layer.close(index);
+                        var idsStr = okUtils.table.batchCheck(table);
+                        if (idsStr) {
+                            okUtils.ajax("/article/batchDel", "post", {idsStr: idsStr}).done(function (response) {
+                                console.log(response);
+                                okUtils.table.successMsg("批量删除成功");
+                            }).fail(function (error) {
+                                console.log(error)
+                            });
+                        }
+                    });
+                }
+            })
+        </script>
+        <!-- 行工具栏模板 -->
+        <script type="text/html" id="operationTpl">
+            <a href="javascript:" title="编辑" lay-event="edit"><i class="layui-icon">&#xe642;</i></a>
+            <a href="javascript:" title="删除" lay-event="del"><i class="layui-icon">&#xe640;</i></a>
+        </script>
+    </body>
+</html>

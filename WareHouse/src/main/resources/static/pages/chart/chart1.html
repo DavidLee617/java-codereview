@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>柱状图</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <script type="text/javascript" src="../../lib/echarts/echarts.min.js"></script>
+    <script type="text/javascript" src="../../lib/echarts/echarts.theme.js"></script>
+    <script type="text/javascript" src="../../lib/echarts/world/js/china.js"></script>
+</head>
+<body>
+<div id="rankinglist" style="width: 100%;height:350px;margin-top: 50px;"></div>
+
+<script src="../../lib/echarts/echarts.min.js"></script>
+<script src="../../js/jquery-1.10.2.js"></script>
+<script type="text/javascript">
+
+    var userSourceOption;
+    var name1 = new Array();
+    var num1 = new Array();
+    $.ajax({
+        type : "post",
+        async : false,            //异步请求（同步请求将会锁住浏览器，用户其他操作必须等待请求完成才可以执行）
+        url : "/selectnumber",    //请求发送到TestServlet处
+        dataType : "json",        //返回数据形式为json
+        success : function(result) {
+            //请求成功时执行该函数内容，result即为服务器返回的json对象
+            if (result) {
+                for (var i = 0; i < result.length; i++) {
+                    // alert(result[i].goodsName);
+                    name1.push(result[i].goodsName);    //挨个取出类别并填入类别数组
+                }
+                for (var i = 0; i < result.length; i++) {
+                    num1.push(result[i].salesback.number);    //挨个取出销量并填入销量数组
+                }
+                userSourceOption = {
+                    backgroundColor: '#011c3a',
+                    "title": {"text": ""},
+                    "tooltip": {"trigger": "axis", "axisPointer": {"type": "cross", "label": {"backgroundColor": "#38445E"}}},
+                    "toolbox": {"feature": {"saveAsImage": {}}},
+                    "grid": {"left": "3%", "right": "4%", "bottom": "3%", "containLabel": true},
+                    "xAxis": [{
+                        data: name1,
+                        axisLine: {
+                            lineStyle: {
+                                color: '#0177d4'
+                            }
+                        },
+                        axisLabel: {
+                            color: '#fff',
+                            fontSize: 12
+                        }
+                    }],
+                    "yAxis": [{
+                        name: "（退货数量排行榜）",
+                        nameTextStyle: {
+                            color: '#fff',
+                            fontSize: 16
+                        },
+                        axisLine: {
+                            lineStyle: {
+                                color: '#0177d4'
+                            }
+                        },
+                        axisLabel: {
+                            color: '#fff',
+                            fontSize: 16
+                        },
+                        splitLine: {
+                            show: false,
+                            lineStyle: {
+                                color: '#0177d4'
+                            }
+                        },
+                        interval: 30,
+
+                    }],
+                    "series": [
+                        {
+                            name: '退货数量',
+                            type: 'bar',
+                            barWidth: 18,
+                            itemStyle: {
+                                normal: {
+                                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                        offset: 0,
+                                        color: '#00b0ff'
+                                    }, {
+                                        offset: 0.8,
+                                        color: '#7052f4'
+                                    }], false)
+                                }
+                            },
+                            data: num1
+                        }
+                    ]
+                }
+            }
+        },
+        error : function(errorMsg) {
+            //请求失败时执行该函数
+            alert("图表请求数据失败!");
+            myChart.hideLoading();
+        },
+    });
+
+    function userSource() {
+        var rankinglist = echarts.init($("#rankinglist")[0], "theme");
+        rankinglist.setOption(userSourceOption);
+        okUtils.echartsResize([rankinglist]);
+    };
+    userSource();
+</script>
+</body>
+</html>

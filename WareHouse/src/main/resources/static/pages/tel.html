@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" class="page-fill">
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="../images/favicon.ico" type="image/x-icon"/>
+    <link rel="stylesheet" href="../css/oksub.css"/>
+    <style>
+        .forget .tit {
+            padding-top: 15px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .forget .code-box {
+            display: flex;
+        }
+
+        .forget .code-box .btn-auth-code {
+            margin-left: 10px;
+        }
+
+        .reset-password-form {
+            display: none;
+        }
+    </style>
+</head>
+<body class="page-fill">
+    <div class="page-fill forget" id="login">
+        <form class="layui-form verify-user-form" action="/mobileLogin" method="post">
+            <div class="layui-form-item tit">手机号登录</div>
+            <div class="layui-form-item input-item">
+                <label for="tel">输入手机号码</label>
+                <input type="text" class="layui-input" id="tel" name="tel" placeholder="请输入手机号码" autocomplete="off" lay-verify="required|phone" maxlength="11">
+            </div>
+            <div class="layui-form-item input-item code-box">
+                <label for="captcha">验证码</label>
+                <input type="text" class="layui-input" id="captcha" name="captcha" placeholder="请输入验证码" autocomplete="off" lay-verify="required" maxlength="4">
+                <button type="button" class="layui-btn btn-auth-code">获取验证码</button>
+            </div>
+            <div class="layui-form-item">
+                <button class="layui-btn layui-block" lay-filter="verifyUser" lay-submit="">登录</button>
+            </div>
+        </form>
+    </div>
+    <!--js逻辑-->
+    <script src="../lib/layui/layui.js"></script>
+    <script>
+        layui.use(["form", "okLayer", "okUtils"], function () {
+            let $ = layui.jquery;
+            let form = layui.form;
+            let okLayer = layui.okLayer;
+            let okUtils = layui.okUtils;
+
+            let phoneRegex = /^[1][0-9]{10}$/;
+            let timer = "";
+            let intervalTime = 60;
+
+            /**
+             * 数据校验
+             */
+            form.verify({
+                phone: [phoneRegex, "手机号格式不正确"],
+                password: [/^[\S]{6,12}$/, "密码必须6到12位，且不能出现空格"],
+                comPassword: function (val) {
+                    let password = $("#password").val();
+                    return password == val ? "" : "两次密码不一致";
+                }
+            });
+
+            /**
+             * 提交表单
+             */
+            // form.on("submit(verifyUser)", function (data) {
+            //     $.ajax({
+            //         type : "post",
+            //         data : data.field,
+            //         url : "/mobileLogin",
+            //         dataType : "json",
+            //         success : function(response) {
+            //             if(response.data == 1){
+            //                 okLayer.greenTickMsg("提交成功", function () {
+            //                     // 样式修改
+            //                     $('.btn-auth-code').removeClass("layui-btn-disabled");
+            //                     $('.btn-auth-code').text("重新获取");
+            //                     // 重置定时器
+            //                     clearInterval(timer);
+            //                     timer = "";
+            //                     intervalTime = 60;
+            //                     // 显示重置密码表单
+            //                     $(".verify-user-form, .reset-password-form").toggle();
+            //                 });
+            //             } else if(response.data == 2){
+            //                 alert("没有此员工");
+            //             }else if(response.data == 3){
+            //                 alert("验证码输入错误");
+            //             }
+            //         },
+            //         error : function() {
+            //             console.log(error)
+            //         }
+            //     });
+            //     return false;
+            // });
+
+            /**
+             * 获取验证码
+             */
+            $('.btn-auth-code').click(function () {
+                let _this = $(this);
+                if (_this.hasClass("layui-btn-disabled")) {
+                    return;
+                }
+                let tel = $("#tel").val();
+                if (phoneRegex.test(tel)) {
+                    _this.addClass("layui-btn-disabled");
+                    _this.text(intervalTime + "秒后获取");
+                    // 按钮操作定时器
+                    timer = setInterval(function () {
+                        intervalTime--;
+                        if (intervalTime < 1) {
+                            clearInterval(timer);
+                            _this.removeClass("layui-btn-disabled");
+                            _this.text("重新获取");
+                            intervalTime = 60;
+                        } else {
+                            _this.text(intervalTime + "秒后获取");
+                        }
+                    }, 1000);
+
+                    // 发送手机验证码
+                    $.ajax({
+                        type : "post",
+                        data : {"tel":tel},
+                        url : "/sendCaptcha",
+                        dataType : "json",
+                        success : function(response) {
+                            okLayer.greenTickMsg("获取成功");
+                        },
+                        error : function() {
+                            console.log(error)
+                        }
+                    });
+                } else {
+                    layer.msg("手机号码格式不正确", {icon: "5", anim: "6"});
+                    $("#phone").focus();
+                }
+            });
+
+            /**
+             * 表单input组件单击时
+             */
+            $("#login .input-item .layui-input").click(function (e) {
+                e.stopPropagation();
+                $(this).addClass("layui-input-focus").find(".layui-input").focus();
+            });
+
+            /**
+             * 表单input组件获取焦点时
+             */
+            $("#login .layui-form-item .layui-input").focus(function () {
+                $(this).parent().addClass("layui-input-focus");
+            });
+
+            /**
+             * 表单input组件失去焦点时
+             */
+            $("#login .layui-form-item .layui-input").blur(function () {
+                $(this).parent().removeClass("layui-input-focus");
+                if ($(this).val() != "") {
+                    $(this).parent().addClass("layui-input-active");
+                } else {
+                    $(this).parent().removeClass("layui-input-active");
+                }
+            });
+        });
+    </script>
+</body>
+</html>

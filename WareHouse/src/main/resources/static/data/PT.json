@@ -1,0 +1,10 @@
+[
+    {
+        "title": "后台首页",
+        "href": "pages/console.html",
+        "fontFamily": "ok-icon",
+        "icon": "&#xe654;",
+        "spread": true,
+        "isCheck": true
+    }
+]

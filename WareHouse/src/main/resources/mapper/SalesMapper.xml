@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.warehouse.dao.SalesInterface">
+    <resultMap id="SalesMap3" type="Sales">
+        <id column="id" property="id"></id>
+        <result column="customerId" property="customerId"></result>
+        <result column="payType" property="payType"></result>
+        <result column="salesTime" property="salesTime"></result>
+        <result column="operateName" property="operateName"></result>
+        <result column="number" property="number"></result>
+        <result column="salePrice" property="salePrice"></result>
+        <result column="goodsId" property="goodsId"></result>
+        <result column="remark" property="remark"></result>
+        <result column="warehouseName" property="warehouseName"></result>
+        <result column="approveTime" property="approveTime"></result>
+        <result column="state" property="state"></result>
+        <association property="goods" resultMap="goodsMap3"></association>
+        <association property="customar" resultMap="customarMap"></association>
+    </resultMap>
+    <resultMap id="SalesBackMap" type="Salesback">
+        <id column="id" property="id"></id>
+        <result column="customerId" property="customerId"></result>
+        <result column="payType" property="payType"></result>
+        <result column="salesbackTime" property="salesbackTime"></result>
+        <result column="operateName" property="operateName"></result>
+        <result column="number" property="number"></result>
+        <result column="goodsId" property="goodsId"></result>
+        <result column="reason" property="reason"></result>
+        <result column="warehouseName" property="warehouseName"></result>
+        <result column="approveTime" property="approveTime"></result>
+        <result column="state" property="state"></result>
+        <association property="goods" resultMap="goodsMap3"></association>
+        <association property="customar" resultMap="customarMap"></association>
+    </resultMap>
+    <resultMap id="goodsMap3" type="Goods">
+        <id column="id" property="id"></id>
+        <result column="goodsName" property="goodsName"></result>
+        <result column="size" property="size"></result>
+    </resultMap>
+    <resultMap id="customarMap" type="Customar">
+        <id column="id" property="id"></id>
+        <result column="customerName" property="customerName"></result>
+    </resultMap>
+    <select id="getCustomerName" resultType="String">
+        select customerName from customar
+    </select>
+    <select id="getGoodsName" resultType="String">
+        select DISTINCT goodsName from goods
+    </select>
+    <select id="getSize" resultType="String">
+        select size from goods where goodsName=#{goodsName}
+    </select>
+    <select id="selectAll" resultMap="SalesMap3">
+        select sales.id,customar.customerName,goods.goodsName,goods.size,sales.number,sales.salePrice,sales.operateName,sales.salesTime,sales.payType,sales.remark,sales.state,sales.approveTime
+        from sales,goods,customar where sales.customerId = customar.id and goods.id = sales.goodsId
+            <if test="id!=null and id!=''">
+                and sales.id=#{id}
+            </if>
+            <if test="startTime!=null and startTime!=''">
+                and salesTime &gt; #{startTime}
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                and salesTime &lt; #{endTime}
+            </if>
+        limit #{page},#{limit}
+    </select>
+    <select id="selectCount" resultType="int">
+        select count(1) from sales
+        <if test="id!=null and id!=''">
+            and id=#{id}
+        </if>
+        <if test="startTime!=null and startTime!=''">
+            and salesTime &gt; #{startTime}
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and salesTime &lt; #{endTime}
+        </if>
+    </select>
+    <insert id="addSales">
+        insert into sales values(null,(select id from customar where customerName=#{customerName}),#{payType},null,#{operateName},#{number},#{salePrice},(select id from goods where goodsName=#{goodsName} and size=#{size}),
+        #{remark},null,NOW(),0)
+    </insert>
+    <update id="updateSales">
+        update sales set customerId=(select id from customar where customerName=#{customerName}),payType=#{payType},salesTime=#{salesTime},operateName=#{operateName},number=#{number},salePrice=#{salePrice},
+        goodsId=(select id from goods where goodsName=#{goodsName} and size=#{size}),remark=#{remark} where id=#{id}
+    </update>
+    <delete id="deleteSales">
+        delete from sales where id=#{id}
+    </delete>
+
+    <select id="selectBackSales" resultMap="SalesBackMap">
+        select salesback.id,customar.customerName,goods.goodsName,goods.size,salesback.number,salesback.operateName,salesback.salesbackTime,salesback.payType,salesback.reason,salesback.state,salesback.approveTime
+        from salesback,goods,customar where salesback.customerId=customar.id and salesback.goodsId=goods.id
+        <if test="id!=null and id!=''">
+            and salesback.id=#{id}
+        </if>
+        <if test="startTime!=null and startTime!=''">
+            and salesbackTime &gt; #{startTime}
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and salesbackTime &lt; #{endTime}
+        </if>
+        limit #{page},#{limit}
+    </select>
+    <select id="selectBackCount" resultType="int">
+        select count(1) from salesback
+        <if test="id!=null and id!=''">
+            and id=#{id}
+        </if>
+        <if test="startTime!=null and startTime!=''">
+            and salesbackTime &gt; #{startTime}
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and salesbackTime &lt; #{endTime}
+        </if>
+    </select>
+    <insert id="addBackSales">
+        insert into salesback values(null,(select id from customar where customerName=#{customerName}),#{payType},null,#{operateName},#{number},(select id from goods where goodsName=#{goodsName} and size=#{size}),
+        #{reason},null,NOW(),0)
+    </insert>
+    <update id="updateSalesBack">
+        update salesback set customerId=(select id from customar where customerName=#{customerName}),payType=#{payType},salesbackTime=#{salesbackTime},operateName=#{operateName}
+        ,goodsId=(select id from goods where goodsName=#{goodsName} and size=#{size}),reason=#{reason},number=#{number}
+        where id=#{id}
+    </update>
+    <delete id="deleteSalesBack">
+        delete from salesback where id=#{id}
+    </delete>
+</mapper>

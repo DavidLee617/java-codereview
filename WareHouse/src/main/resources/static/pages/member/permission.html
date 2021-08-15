@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>权限列表</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../css/oksub.css">
+</head>
+<body>
+    <div class="ok-body">
+        <!--数据表格-->
+        <table class="layui-hide" id="tableId" lay-filter="tableFilter"></table>
+    </div>
+    <!--js逻辑-->
+    <script src="../../lib/layui/layui.js"></script>
+    <script>
+        layui.use(["element", "table", "form", "okLayer", "okUtils"], function () {
+            let table = layui.table;
+
+            let userTable = table.render({
+                elem: '#tableId',
+                url: '/Permission',
+                limit: 10,
+                page: true,
+                toolbar: true,
+                toolbar: "#toolbarTpl",
+                size: "sm",
+                cols: [[
+                    {type: "checkbox", fixed: "left"},
+                    {field: "id", title: "ID", width: 100, sort: true},
+                    {field: "name", title: "权限名称", width: 100},
+                    {field: "p_name", title: "权限标识", width: 100},
+                    {field: "remark", title: "备注", width: 150},
+                ]],
+                done: function (res, curr, count) {
+                    console.info(res, curr, count);
+                }
+            });
+        })
+    </script>
+</body>
+</html>
